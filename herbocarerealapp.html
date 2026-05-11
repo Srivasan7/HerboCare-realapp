@@ -1,0 +1,670 @@
+<html>
+<head>
+<title>HerboCare App</title>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+
+body{
+  margin:0;
+  font-family:Arial;
+  background: linear-gradient(135deg,#e8f5e9,#c8e6c9);
+}
+
+header{
+  background:#203e02;
+  color:white;
+  padding:15px;
+  text-align:center;
+  font-size:20px;
+}
+
+.dark{
+  background: linear-gradient(135deg,#1b1b1b,#2e2e2e);
+  color:white;
+}
+
+
+.topNav{
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
+  gap: 20px;
+  background: rgba(60, 38, 2, 0.4);
+  backdrop-filter: blur(10px);
+  color: #e8f5e9;
+}
+.topNav a{
+  margin-right: 25px;
+  color: #faf6f0;
+  text-decoration: none;
+  font-weight: 500;
+
+}
+.hidden{
+  display:none;
+}
+
+.container{
+  padding:20px;
+  text-align:center;
+}
+
+input, textarea, select{
+  padding:10px;
+  margin:10px;
+  width:80%;
+}
+
+button{
+  background:#305803;
+  color:white;
+  border:none;
+  padding:10px;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:20px;
+  padding:20px;
+}
+
+.card{
+  position:relative;
+  cursor:pointer;
+  overflow:hidden;
+  border-radius:12px;
+}
+
+#categoryImg{
+  width:100%;
+  height:250px;
+  object-fit:cover;
+  transition:0.3s;
+}
+
+.card:hover #categoryImg{
+  transform:scale(1.05);
+}
+
+.imgtext{
+  position:absolute;
+  bottom:15px;
+  left:15px;
+  color:white;
+  font-size:28px;
+  font-weight:bold;
+}
+
+.productCard{
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  text-align:center;
+}
+
+.productCard img{
+  width:100%;
+  height:300px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+}
+
+.footer{
+  background:#222;
+  color:white;
+  text-align:center;
+  padding:20px;
+  margin-top:50px;
+}
+
+#loader{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.spinner{
+  width:40px;
+  height:40px;
+  border:5px solid #ccc;
+  border-top:5px solid green;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  100%{
+    transform:rotate(360deg);
+  }
+}
+
+.orderBox{
+  background:white;
+  margin:20px;
+  padding:20px;
+  border-radius:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>HERBOCARE</header>
+
+<div id="loader">
+  <div class="spinner"></div>
+</div>
+
+<!-- menu -->
+<div class="topNav hidden" id="mainNav">
+  <div class="topNav">
+  <span onclick="goCategory()"> Home</span>
+  <span onclick="goCart()"> Cart</span>
+  <span onclick="toggleDark()"> Mode</span></div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginPage" class="container">
+
+  <img src="herbocare.jpeg" width="120">
+
+  <h2>Login</h2>
+
+  <input type="text" id="loginUser" placeholder="Username"><br>
+
+  <input type="password" id="loginPass" placeholder="Password"><br>
+
+  <button onclick="login()">Login</button><br><br>
+
+  <p>
+    New user?
+    <span onclick="showSignup()" style="color:blue;cursor:pointer;">
+      Signup
+    </span>
+  </p>
+
+</div>
+
+<!-- SIGNUP -->
+<div id="signupPage" class="container hidden">
+
+  <h2>Signup</h2>
+
+  <input type="text" id="newUser" placeholder="Create Username"><br>
+
+  <input type="password" id="newPass" placeholder="Create Password"><br>
+
+  <button onclick="signup()">Create Account</button><br><br>
+
+  <p onclick="showLogin()" style="color:blue;cursor:pointer;">
+    Back
+  </p>
+
+</div>
+
+<!-- HOME -->
+<div id="homePage" class="container hidden">
+
+  <h1>Welcome to Herbocare!</h1>
+
+  <img src="herbocareproducts.jpeg"
+       width="1470"
+       height="800"
+       style="display:block;max-width:100%;"><br><br>
+
+  <button onclick="goCategory()">Enter App</button><br><br>
+
+  <button onclick="logout()">Logout</button>
+
+</div>
+
+<!-- CATEGORY -->
+<div id="categoryPage" class="hidden">
+
+  <img src="herbocare.jpeg"
+       width="120"
+       style="display:block;margin:auto;">
+
+  <h1 style="text-align:center;">Personal Care</h1>
+
+  <div class="grid">
+
+    <div class="card" onclick="openProducts('Body')">
+      <img src="bodycare.jpeg" id="categoryImg">
+      <div class="imgtext">Body Care</div>
+    </div>
+
+    <div class="card" onclick="openProducts('Eye')">
+      <img src="eyecare.jpeg" id="categoryImg">
+      <div class="imgtext">Eye Care</div>
+    </div>
+
+    <div class="card" onclick="openProducts('Face')">
+      <img src="facecare.jpeg" id="categoryImg">
+      <div class="imgtext">Face Care</div>
+    </div>
+
+    <div class="card" onclick="openProducts('Hair')">
+      <img src="haircare.jpeg" id="categoryImg">
+      <div class="imgtext">Hair Care</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    © 2026 HerboCare
+  </div>
+
+</div>
+
+<!-- PRODUCT PAGE -->
+<div id="productPage" class="hidden">
+
+  <div class="topbar">
+    <button onclick="backCategory()">Back</button>
+
+    <h3 id="title"></h3>
+
+    <button onclick="goCart()">Cart</button>
+  </div>
+
+  <div style="padding:10px;text-align:center;">
+
+    <input type="text"
+           id="searchBox"
+           placeholder="Search product..."
+           onkeyup="searchProduct()"
+           style="width:60%;padding:8px;">
+
+    <select onchange="filterPrice(this.value)" style="padding:8px;">
+      <option value="all">All</option>
+      <option value="low">Below ₹150</option>
+      <option value="high">Above ₹150</option>
+    </select>
+
+  </div>
+
+  <div class="grid" id="products"></div>
+
+</div>
+
+<!-- CART PAGE -->
+<div id="cartPage" class="hidden">
+
+  <div class="topbar">
+    <button onclick="backProducts()">Back</button>
+
+    <h3>Cart</h3>
+  </div>
+
+  <div id="cartItems" style="padding:10px;"></div>
+
+  <h3 id="total" style="text-align:center;"></h3>
+
+  <!-- DELIVERY ADDRESS -->
+  <div class="orderBox">
+
+    <h2>Delivery Address</h2>
+
+    <input type="text"
+           id="custName"
+           placeholder="Full Name"><br>
+
+    <input type="text"
+           id="custPhone"
+           placeholder="Phone Number"><br>
+
+    <textarea id="custAddress"
+              rows="4"
+              placeholder="Enter Full Address"></textarea><br>
+
+    <button onclick="placeOrder()">
+      Place Order
+    </button>
+
+    <h3 id="orderMsg"></h3>
+
+  </div>
+
+</div>
+
+<script>
+
+setTimeout(()=>{
+  $("#loader").hide();
+},1000);
+
+function toggleDark(){
+  $("body").toggleClass("dark");
+}
+
+let allProducts=[];
+
+let productsData={
+
+  Body:[
+    {name:"HERBO CARE'S BODY LOTION",price:200,img:"body33.jpeg"},
+    {name:"HERBO CARE'S BODY HERBAL SOAP",price:100,img:"body2.jpeg"},
+    {name:"HERBO CARE'S BODY SCRUB",price:150,img:"body11.jpeg"},
+    {name:"HERBO CARE'S MOISTURIZER",price:170,img:"body4.jpeg"},
+    {name:"HERBO CARE'S UNDER ARM ROLL ON",price:250,img:"body5.jpeg"},
+    {name:"HERBO CARE'S BODY OIL",price:120,img:"body6.jpeg"},
+    {name:"HERBO CARE'S AGE DEFYING HAND CREAM",price:140,img:"body7.jpeg"},
+    {name:"HERBO CARE'S BODY POWDER",price:100,img:"body8.jpeg"}
+  ],
+
+  Face:[
+    {name:"HERBO CARE'S FACE WASH",price:120,img:"face1.jpeg"},
+    {name:"HERBO CARE'S NIGHT CREAM",price:180,img:"face2.jpeg"},
+    {name:"HERBO CARE'S BEETROOT FACE PACK",price:150,img:"face3.jpeg"},
+    {name:"HERBO CARE'S FACE SERUM",price:250,img:"face4.jpeg"},
+    {name:"HERBO CARE'S SUNSCREEN 50PA+++",price:200,img:"face5.jpeg"},
+    {name:"HERBO CARE'S ALOEVERA GEL",price:130,img:"face6.jpeg"},
+    {name:"HERBO CARE'S LIP BALM",price:140,img:"face7.jpeg"},
+    {name:"HERBO CARE'S EYE LINER",price:160,img:"face8.jpeg"}
+  ],
+
+  Hair:[
+    {name:"Shampoo",price:180,img:"hair1.jpg"},
+    {name:"Conditioner",price:170,img:"hair2.jpg"},
+    {name:"Oil",price:200,img:"hair3.jpg"},
+    {name:"Mask",price:220,img:"hair4.jpg"},
+    {name:"Serum",price:190,img:"hair5.jpg"},
+    {name:"Powder",price:140,img:"hair6.jpg"},
+    {name:"Spray",price:160,img:"hair7.jpg"},
+    {name:"Gel",price:150,img:"hair8.jpg"}
+  ],
+
+  Eye:[
+    {name:"Eye Cream",price:210,img:"eye1.jpg"},
+    {name:"Gel",price:180,img:"eye2.jpg"},
+    {name:"Drops",price:120,img:"eye3.jpg"},
+    {name:"Pads",price:140,img:"eye4.jpg"},
+    {name:"Serum",price:230,img:"eye5.jpg"},
+    {name:"Mask",price:160,img:"eye6.jpg"},
+    {name:"Roll",price:170,img:"eye7.jpg"},
+    {name:"Mix",price:150,img:"eye8.jpg"}
+  ]
+};
+
+function login(){
+
+  $("#loginPage").hide();
+
+  $("#homePage").show();
+}
+
+function logout(){
+
+  $("#homePage").hide();
+
+  $("#loginPage").show();
+}
+
+function showSignup(){
+
+  $("#loginPage").hide();
+
+  $("#signupPage").show();
+}
+
+function showLogin(){
+
+  $("#signupPage").hide();
+
+  $("#loginPage").show();
+}
+
+function signup(){
+
+  alert("Account Created Successfully");
+
+  showLogin();
+}
+
+function goCategory(){
+
+  $("#homePage").hide();
+
+  $("#productPage").hide();
+
+  $("#cartPage").hide();
+
+  $("#categoryPage").show();
+
+  $("#mainNav").show();
+}
+
+function openProducts(cat){
+
+  $("#categoryPage").hide();
+
+  $("#productPage").show();
+
+  $("#title").text(cat);
+
+  allProducts=productsData[cat];
+
+  displayProducts(allProducts);
+}
+
+function displayProducts(list){
+
+  $("#products").empty();
+
+  list.forEach((p,index)=>{
+
+    $("#products").append(`
+
+      <div class="productCard">
+
+        <img src="${p.img}">
+
+        <h4>${p.name}</h4>
+
+        <p>₹${p.price}</p>
+
+        <button onclick="addCart(${index})">
+          Add To Cart
+        </button>
+
+      </div>
+
+    `);
+
+  });
+
+}
+
+function searchProduct(){
+
+  let val=$("#searchBox").val().toLowerCase();
+
+  let filtered=allProducts.filter(p=>
+    p.name.toLowerCase().includes(val)
+  );
+
+  displayProducts(filtered);
+}
+
+function filterPrice(type){
+
+  let filtered=allProducts;
+
+  if(type==="low"){
+
+    filtered=allProducts.filter(p=>p.price<150);
+
+  }else if(type==="high"){
+
+    filtered=allProducts.filter(p=>p.price>=150);
+  }
+
+  displayProducts(filtered);
+}
+
+function addCart(index){
+
+  let product = allProducts[index];
+
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  let item = cart.find(p => p.name === product.name);
+
+  if(item){
+
+    item.qty += 1;
+
+  }else{
+
+    cart.push({
+      name: product.name,
+      price: product.price,
+      img: product.img,
+      qty: 1
+    });
+
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert("Added To Cart");
+}
+function goCart(){
+
+  $("#productPage").hide();
+
+  $("#categoryPage").hide();
+
+  $("#cartPage").show();
+
+  showCart();
+}
+
+function backProducts(){
+
+  $("#cartPage").hide();
+
+  $("#productPage").show();
+}
+
+function backCategory(){
+
+  $("#productPage").hide();
+
+  $("#categoryPage").show();
+}
+
+function showCart(){
+
+  let cart=JSON.parse(localStorage.getItem("cart")) || [];
+
+  let html="";
+
+  let total=0;
+
+  cart.forEach((p,index)=>{
+
+    total += p.price * p.qty;
+
+    html += `
+
+      <div class="productCard" style="margin:15px;">
+
+        <img src="${p.img}"
+             style="width:120px;height:120px;object-fit:cover;">
+
+        <h3>${p.name}</h3>
+
+        <p>₹${p.price} x ${p.qty}</p>
+
+        <button onclick="removeCart(${index})">
+          Remove
+        </button>
+
+      </div>
+
+    `;
+  });
+
+  $("#cartItems").html(
+    html || "<h2 style='text-align:center;'>Cart Empty</h2>"
+  );
+
+  $("#total").text("Total ₹" + total);
+}
+
+function removeCart(index){
+
+  let cart=JSON.parse(localStorage.getItem("cart")) || [];
+
+  cart.splice(index,1);
+
+  localStorage.setItem("cart",JSON.stringify(cart));
+
+  showCart();
+}
+
+function placeOrder(){
+
+  let name=$("#custName").val();
+
+  let phone=$("#custPhone").val();
+
+  let address=$("#custAddress").val();
+
+  let cart=JSON.parse(localStorage.getItem("cart")) || [];
+
+  if(cart.length===0){
+
+    alert("Cart Empty");
+
+    return;
+  }
+
+  if(name==="" || phone==="" || address===""){
+
+    alert("Fill Delivery Details");
+
+    return;
+  }
+
+  $("#orderMsg").html(`
+
+    ✅ Order Placed Successfully <br><br>
+
+    <b>Name:</b> ${name}<br>
+
+    <b>Phone:</b> ${phone}<br>
+
+    <b>Address:</b> ${address}
+
+  `);
+
+  localStorage.removeItem("cart");
+
+  showCart();
+}
+
+</script>
+
+</body>
+</html>
